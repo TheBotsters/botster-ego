@@ -2,8 +2,9 @@ import type { BaseTokenResolution } from "../channels/plugins/types.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { normalizeResolvedSecretInputString } from "../config/types.secrets.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+import { BrokerClient } from "../seks/broker-client.js";
 
-export type DiscordTokenSource = "env" | "config" | "none";
+export type DiscordTokenSource = "env" | "config" | "broker" | "none";
 
 export type DiscordTokenResolution = BaseTokenResolution & {
   source: DiscordTokenSource;
@@ -15,6 +16,38 @@ export function normalizeDiscordToken(raw: unknown, path: string): string | unde
     return undefined;
   }
   return trimmed.replace(/^Bot\s+/i, "");
+}
+
+/**
+ * Async version of resolveDiscordToken that supports broker-based token resolution
+ */
+export async function resolveDiscordTokenAsync(
+  cfg?: OpenClawConfig,
+  opts: { accountId?: string | null; envToken?: string | null } = {},
+): Promise<DiscordTokenResolution> {
+  // First check for broker configuration
+  const brokerConfig = cfg?.seks?.broker;
+  if (brokerConfig?.url) {
+    try {
+      const brokerClient = new BrokerClient(
+        brokerConfig.url,
+        brokerConfig.token,
+        brokerConfig.tokenCommand,
+      );
+      const channelTokens = await brokerClient.getChannelTokens();
+      if (channelTokens.discord) {
+        const normalizedToken = normalizeDiscordToken(channelTokens.discord);
+        if (normalizedToken) {
+          return { token: normalizedToken, source: "broker" };
+        }
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch Discord token from SEKS broker: ${error}`);
+    }
+  }
+
+  // Fall back to regular token resolution
+  return resolveDiscordToken(cfg, opts);
 }
 
 export function resolveDiscordToken(

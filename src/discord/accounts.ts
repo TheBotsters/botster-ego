@@ -11,7 +11,7 @@ export type ResolvedDiscordAccount = {
   enabled: boolean;
   name?: string;
   token: string;
-  tokenSource: "env" | "config" | "none";
+  tokenSource: "env" | "config" | "broker" | "none";
   config: DiscordAccountConfig;
 };
 
