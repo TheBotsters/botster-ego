@@ -122,6 +122,13 @@ export type OpenClawConfig = {
   gateway?: GatewayConfig;
   memory?: MemoryConfig;
   mcp?: McpConfig;
+  seks?: {
+    broker?: {
+      url?: string;
+      token?: string;
+      tokenCommand?: string;
+    };
+  };
 };
 
 export type ConfigValidationIssue = {
