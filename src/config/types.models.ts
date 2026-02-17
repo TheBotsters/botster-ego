@@ -29,7 +29,7 @@ export type ModelCompatConfig = {
   requiresOpenAiAnthropicToolPayload?: boolean;
 };
 
-export type ModelProviderAuthMode = "api-key" | "aws-sdk" | "oauth" | "token";
+export type ModelProviderAuthMode = "api-key" | "aws-sdk" | "oauth" | "token" | "broker";
 
 export type ModelDefinitionConfig = {
   id: string;

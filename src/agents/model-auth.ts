@@ -25,7 +25,8 @@ import { normalizeProviderId } from "./model-selection.js";
 export { ensureAuthProfileStore, resolveAuthProfileOrder } from "./auth-profiles.js";
 
 /**
- * Resolve broker base URL for provider if broker is configured
+ * Resolve broker base URL for provider if broker is configured.
+ * Returns the proxy URL pattern that routes provider requests through the broker.
  */
 export function resolveBrokerBaseUrl(provider: string): string | undefined {
   const cfg = loadConfig();
@@ -190,7 +191,7 @@ export type ResolvedProviderAuth = {
   apiKey?: string;
   profileId?: string;
   source: string;
-  mode: "api-key" | "oauth" | "token" | "aws-sdk";
+  mode: "api-key" | "oauth" | "token" | "aws-sdk" | "broker";
 };
 
 export async function resolveApiKeyForProvider(params: {
@@ -212,7 +213,7 @@ export async function resolveApiKeyForProvider(params: {
       return {
         apiKey: brokerToken,
         source: "seks-broker",
-        mode: "api-key",
+        mode: "broker",
       };
     } catch (error) {
       console.warn(`SEKS broker auth failed: ${error}`);
@@ -314,7 +315,7 @@ export async function resolveApiKeyForProvider(params: {
 }
 
 export type EnvApiKeyResult = { apiKey: string; source: string };
-export type ModelAuthMode = "api-key" | "oauth" | "token" | "mixed" | "aws-sdk" | "unknown";
+export type ModelAuthMode = "api-key" | "oauth" | "token" | "mixed" | "aws-sdk" | "broker" | "unknown";
 
 export function resolveEnvApiKey(
   provider: string,
@@ -359,6 +360,11 @@ export function resolveModelAuthMode(
   const resolved = provider?.trim();
   if (!resolved) {
     return undefined;
+  }
+
+  const brokerClient = createBrokerClientIfConfigured(cfg);
+  if (brokerClient) {
+    return "broker";
   }
 
   const authOverride = resolveProviderAuthOverride(cfg, resolved);
