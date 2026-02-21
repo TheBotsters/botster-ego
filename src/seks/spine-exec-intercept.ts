@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import type { ExecToolDetails } from "../agents/bash-tools.exec.js";
 import type { SpineCommandResult, SpineConfig } from "./spine-client.js";
 import { spineExec } from "./spine-client.js";
 
-type ToolExecute = NonNullable<AgentTool<unknown, unknown>["execute"]>;
+type ToolExecute = NonNullable<AgentTool<any>["execute"]>;
 
-function isAgentToolResult(value: unknown): value is AgentToolResult<unknown> {
+function isAgentToolResult(value: unknown): value is AgentToolResult<any> {
   if (!value || typeof value !== "object") {
     return false;
   }
@@ -45,10 +46,7 @@ function ensureActuatorAvailable(result: SpineCommandResult): void {
   }
 }
 
-function createTextResult(
-  text: string,
-  details: Record<string, unknown>,
-): AgentToolResult<unknown> {
+function createTextResult(text: string, details: Record<string, unknown>): AgentToolResult<any> {
   return {
     content: [{ type: "text", text }],
     details,
@@ -63,10 +61,7 @@ function resolveExecTimeoutMs(args: Record<string, unknown>): number {
   return 30_000;
 }
 
-function wrapToolExecute(
-  tool: AgentTool<unknown, unknown>,
-  execute: ToolExecute,
-): AgentTool<unknown, unknown> {
+function wrapToolExecute(tool: AgentTool<any>, execute: ToolExecute): AgentTool<any> {
   return {
     ...tool,
     execute,
@@ -142,7 +137,7 @@ function mapExecResult(
   };
 }
 
-function mapGenericSpineResult(result: SpineCommandResult): AgentToolResult<unknown> {
+function mapGenericSpineResult(result: SpineCommandResult): AgentToolResult<any> {
   ensureActuatorAvailable(result);
 
   if (result.status === "timeout") {
@@ -176,9 +171,9 @@ function mapGenericSpineResult(result: SpineCommandResult): AgentToolResult<unkn
 }
 
 export function createSpineExecTool(
-  baseTool: AgentTool<unknown, unknown>,
+  baseTool: AgentTool<any>,
   spineConfig: SpineConfig,
-): AgentTool<unknown, unknown> {
+): AgentTool<any> {
   const baseExecute = baseTool.execute;
   if (!baseExecute) {
     return baseTool;
@@ -203,9 +198,9 @@ export function createSpineExecTool(
 }
 
 export function createSpineProcessTool(
-  baseTool: AgentTool<unknown, unknown>,
+  baseTool: AgentTool<any>,
   spineConfig: SpineConfig,
-): AgentTool<unknown, unknown> {
+): AgentTool<any> {
   const baseExecute = baseTool.execute;
   if (!baseExecute) {
     return baseTool;
@@ -220,9 +215,9 @@ export function createSpineProcessTool(
 }
 
 export function createSpineReadTool(
-  baseTool: AgentTool<unknown, unknown>,
+  baseTool: AgentTool<any>,
   spineConfig: SpineConfig,
-): AgentTool<unknown, unknown> {
+): AgentTool<any> {
   const baseExecute = baseTool.execute;
   if (!baseExecute) {
     return baseTool;
@@ -237,9 +232,9 @@ export function createSpineReadTool(
 }
 
 export function createSpineWriteTool(
-  baseTool: AgentTool<unknown, unknown>,
+  baseTool: AgentTool<any>,
   spineConfig: SpineConfig,
-): AgentTool<unknown, unknown> {
+): AgentTool<any> {
   const baseExecute = baseTool.execute;
   if (!baseExecute) {
     return baseTool;
@@ -254,9 +249,9 @@ export function createSpineWriteTool(
 }
 
 export function createSpineEditTool(
-  baseTool: AgentTool<unknown, unknown>,
+  baseTool: AgentTool<any>,
   spineConfig: SpineConfig,
-): AgentTool<unknown, unknown> {
+): AgentTool<any> {
   const baseExecute = baseTool.execute;
   if (!baseExecute) {
     return baseTool;
