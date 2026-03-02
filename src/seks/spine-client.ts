@@ -46,14 +46,15 @@ function resolveErrorMessage(status: number, body: unknown): string {
 }
 
 export function getSpineConfig(): SpineConfig | null {
-  if (process.env.BOTSTER_EXEC_VIA_SPINE !== "1") {
+  if (process.env.BOTSTER_EXEC_NORMAL === "1") {
     return null;
   }
   const brokerUrl = process.env.SEKS_BROKER_URL?.trim();
-  const agentToken = process.env.SEKS_BROKER_TOKEN?.trim();
-  if (!brokerUrl || !agentToken) {
+  if (!brokerUrl) {
     return null;
   }
+  // agentToken: superego proxy injects real token; value here is irrelevant
+  const agentToken = process.env.SEKS_BROKER_TOKEN?.trim() || "superego-proxy";
   return {
     brokerUrl: normalizeBrokerUrl(brokerUrl),
     agentToken,
