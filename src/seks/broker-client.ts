@@ -12,7 +12,7 @@ import type {
 const execAsync = promisify(exec);
 
 /**
- * Client for SEKS Broker API
+ * Client for Botster Broker API
  * Handles token resolution, API proxying, and capability management
  */
 export class BrokerClient {
@@ -49,11 +49,11 @@ export class BrokerClient {
         this.cachedToken = stdout.trim();
         return this.cachedToken;
       } catch (error) {
-        throw new Error(`Failed to execute tokenCommand: ${error}`);
+        throw new Error(`[botster-broker-client] Failed to execute tokenCommand: ${error}`);
       }
     }
 
-    throw new Error("No broker token configured (token or tokenCommand required)");
+    throw new Error("[botster-broker-client] No broker token configured (token or tokenCommand required)");
   }
 
   /**
@@ -83,7 +83,7 @@ export class BrokerClient {
         code: errorData.code,
         statusCode: response.status,
       };
-      throw new Error(`Broker request failed: ${JSON.stringify(brokerError)}`);
+      throw new Error(`[botster-broker-client] Broker request failed: ${JSON.stringify(brokerError)}`);
     }
 
     return response.json();
