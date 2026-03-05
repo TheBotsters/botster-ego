@@ -42,7 +42,7 @@ export async function resolveDiscordTokenAsync(
         }
       }
     } catch (error) {
-      console.warn(`Failed to fetch Discord token from SEKS broker: ${error}`);
+      console.warn(`[botster-auth] Failed to fetch Discord token from broker: ${error}`);
     }
   }
 

@@ -205,18 +205,18 @@ export async function resolveApiKeyForProvider(params: {
   const { provider, cfg, profileId, preferredProfile } = params;
   const store = params.store ?? ensureAuthProfileStore(params.agentDir);
 
-  // Check if SEKS broker is configured
+  // Check if Botster broker is configured
   const brokerClient = createBrokerClientIfConfigured(cfg);
   if (brokerClient) {
     try {
       const brokerToken = await brokerClient.resolveToken();
       return {
         apiKey: brokerToken,
-        source: "seks-broker",
+        source: "botster-broker",
         mode: "broker",
       };
     } catch (error) {
-      console.warn(`SEKS broker auth failed: ${error}`);
+      console.warn(`[botster-auth] Broker auth failed: ${error}`);
     }
   }
 
@@ -228,7 +228,7 @@ export async function resolveApiKeyForProvider(params: {
       agentDir: params.agentDir,
     });
     if (!resolved) {
-      throw new Error(`No credentials found for profile "${profileId}".`);
+      throw new Error(`[botster-auth] No credentials found for profile "${profileId}".`);
     }
     const mode = store.profiles[profileId]?.type;
     return {
@@ -284,11 +284,6 @@ export async function resolveApiKeyForProvider(params: {
     return { apiKey: customKey, source: "models.json", mode: "api-key" };
   }
 
-  const syntheticLocalAuth = resolveSyntheticLocalProviderAuth({ cfg, provider });
-  if (syntheticLocalAuth) {
-    return syntheticLocalAuth;
-  }
-
   const normalized = normalizeProviderId(provider);
   if (authOverride === undefined && normalized === "amazon-bedrock") {
     return resolveAwsSdkAuthInfo();
@@ -298,7 +293,7 @@ export async function resolveApiKeyForProvider(params: {
     const hasCodex = listProfilesForProvider(store, "openai-codex").length > 0;
     if (hasCodex) {
       throw new Error(
-        'No API key found for provider "openai". You are authenticated with OpenAI Codex OAuth. Use openai-codex/gpt-5.4 (OAuth) or set OPENAI_API_KEY to use openai/gpt-5.4.',
+        '[botster-auth] No API key found for provider "openai". You are authenticated with OpenAI Codex OAuth. Use openai-codex/gpt-5.3-codex (OAuth) or set OPENAI_API_KEY to use openai/gpt-5.1-codex.',
       );
     }
   }
@@ -307,7 +302,7 @@ export async function resolveApiKeyForProvider(params: {
   const resolvedAgentDir = path.dirname(authStorePath);
   throw new Error(
     [
-      `No API key found for provider "${provider}".`,
+      `[botster-auth] No API key found for provider "${provider}".`,
       `Auth store: ${authStorePath} (agentDir: ${resolvedAgentDir}).`,
       `Configure auth for this agent (${formatCliCommand("openclaw agents add <id>")}) or copy auth-profiles.json from the main agentDir.`,
     ].join(" "),
@@ -349,7 +344,58 @@ export function resolveEnvApiKey(
     }
     return { apiKey: envKey, source: "gcloud adc" };
   }
-  return null;
+
+  if (normalized === "opencode") {
+    return pick("OPENCODE_API_KEY") ?? pick("OPENCODE_ZEN_API_KEY");
+  }
+
+  if (normalized === "qwen-portal") {
+    return pick("QWEN_OAUTH_TOKEN") ?? pick("QWEN_PORTAL_API_KEY");
+  }
+
+  if (normalized === "minimax-portal") {
+    return pick("MINIMAX_OAUTH_TOKEN") ?? pick("MINIMAX_API_KEY");
+  }
+
+  if (normalized === "kimi-coding") {
+    return pick("KIMI_API_KEY") ?? pick("KIMICODE_API_KEY");
+  }
+
+  if (normalized === "huggingface") {
+    return pick("HUGGINGFACE_HUB_TOKEN") ?? pick("HF_TOKEN");
+  }
+
+  const envMap: Record<string, string> = {
+    openai: "OPENAI_API_KEY",
+    google: "GEMINI_API_KEY",
+    voyage: "VOYAGE_API_KEY",
+    groq: "GROQ_API_KEY",
+    deepgram: "DEEPGRAM_API_KEY",
+    cerebras: "CEREBRAS_API_KEY",
+    xai: "XAI_API_KEY",
+    openrouter: "OPENROUTER_API_KEY",
+    litellm: "LITELLM_API_KEY",
+    "vercel-ai-gateway": "AI_GATEWAY_API_KEY",
+    "cloudflare-ai-gateway": "CLOUDFLARE_AI_GATEWAY_API_KEY",
+    moonshot: "MOONSHOT_API_KEY",
+    minimax: "MINIMAX_API_KEY",
+    nvidia: "NVIDIA_API_KEY",
+    xiaomi: "XIAOMI_API_KEY",
+    synthetic: "SYNTHETIC_API_KEY",
+    venice: "VENICE_API_KEY",
+    mistral: "MISTRAL_API_KEY",
+    opencode: "OPENCODE_API_KEY",
+    together: "TOGETHER_API_KEY",
+    qianfan: "QIANFAN_API_KEY",
+    ollama: "OLLAMA_API_KEY",
+    vllm: "VLLM_API_KEY",
+  };
+  const envVar = envMap[normalized];
+  if (!envVar) {
+    return null;
+  }
+  return pick(envVar);
+
 }
 
 export function resolveModelAuthMode(
@@ -436,5 +482,5 @@ export function requireApiKey(auth: ResolvedProviderAuth, provider: string): str
   if (key) {
     return key;
   }
-  throw new Error(`No API key resolved for provider "${provider}" (auth mode: ${auth.mode}).`);
+  throw new Error(`[botster-auth] No API key resolved for provider "${provider}" (auth mode: ${auth.mode}).`);
 }
