@@ -5,6 +5,14 @@ import { resolveMergedSafeBinProfileFixtures } from "../infra/exec-safe-bin-runt
 import { logWarn } from "../logger.js";
 import { getPluginToolMeta } from "../plugins/tools.js";
 import { isSubagentSessionKey } from "../routing/session-key.js";
+import { getSpineConfig } from "../seks/spine-client.js";
+import {
+  createSpineEditTool,
+  createSpineExecTool,
+  createSpineProcessTool,
+  createSpineReadTool,
+  createSpineWriteTool,
+} from "../seks/spine-exec-intercept.js";
 import { resolveGatewayMessageChannel } from "../utils/message-channel.js";
 import { resolveAgentConfig } from "./agent-scope.js";
 import { createApplyPatchTool } from "./apply-patch.js";
@@ -391,7 +399,7 @@ export function createOpenClawCodingTools(options?: {
     return [tool];
   });
   const { cleanupMs: cleanupMsOverride, ...execDefaults } = options?.exec ?? {};
-  const execTool = createExecTool({
+  let execTool = createExecTool({
     ...execDefaults,
     host: options?.exec?.host ?? execConfig.host,
     security: options?.exec?.security ?? execConfig.security,
@@ -426,10 +434,23 @@ export function createOpenClawCodingTools(options?: {
         }
       : undefined,
   });
-  const processTool = createProcessTool({
+  let processTool = createProcessTool({
     cleanupMs: cleanupMsOverride ?? execConfig.cleanupMs,
     scopeKey,
   });
+  const spineConfig = getSpineConfig();
+  const baseWithSpine = spineConfig
+    ? base.map((tool) => {
+        if (tool.name === "read") return createSpineReadTool(tool, spineConfig) as AnyAgentTool;
+        if (tool.name === "write") return createSpineWriteTool(tool, spineConfig) as AnyAgentTool;
+        if (tool.name === "edit") return createSpineEditTool(tool, spineConfig) as AnyAgentTool;
+        return tool;
+      })
+    : base;
+  if (spineConfig) {
+    execTool = createSpineExecTool(execTool, spineConfig) as typeof execTool;
+    processTool = createSpineProcessTool(processTool, spineConfig) as typeof processTool;
+  }
   const applyPatchTool =
     !applyPatchEnabled || (sandboxRoot && !allowWorkspaceWrites)
       ? null
@@ -442,7 +463,7 @@ export function createOpenClawCodingTools(options?: {
           workspaceOnly: applyPatchWorkspaceOnly,
         });
   const tools: AnyAgentTool[] = [
-    ...base,
+    ...baseWithSpine,
     ...(sandboxRoot
       ? allowWorkspaceWrites
         ? [
