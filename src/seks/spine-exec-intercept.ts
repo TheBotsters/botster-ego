@@ -264,3 +264,68 @@ export function createSpineEditTool(
     return mapGenericSpineResult(result);
   });
 }
+
+// ─── Actuator Management Tools ──────────────────────────────────────────────
+
+import {
+  spineActuatorList,
+  spineActuatorSelected,
+  spineActuatorSelect,
+} from "./spine-client.js";
+
+export function createActuatorListTool(spineConfig: SpineConfig): AgentTool<any> {
+  return {
+    name: "actuator_list",
+    label: "List Actuators",
+    description: "List available actuators (execution environments). Shows name, type, status, and ID for each actuator.",
+    parameters: {
+      type: "object",
+      properties: {},
+    },
+    async execute() {
+      const actuators = await spineActuatorList(spineConfig);
+      const selected = await spineActuatorSelected(spineConfig);
+      const lines = actuators.map((a) => {
+        const marker = a.id === selected.actuator_id ? " ← selected" : "";
+        return `${a.name} (${a.type}) — ${a.status}${marker}\n  id: ${a.id}`;
+      });
+      return {
+        content: [{ type: "text", text: lines.join("\n\n") || "No actuators found." }],
+        details: { actuators, selected_id: selected.actuator_id },
+      };
+    },
+  };
+}
+
+export function createActuatorSelectTool(spineConfig: SpineConfig): AgentTool<any> {
+  return {
+    name: "actuator_select",
+    label: "Select Actuator",
+    description: "Switch the active actuator (execution environment). All subsequent exec/read/write/edit commands will run on the selected actuator. Use actuator_list first to see available actuators and their IDs.",
+    parameters: {
+      type: "object",
+      properties: {
+        actuator_id: {
+          type: "string",
+          description: "The ID of the actuator to select.",
+        },
+      },
+      required: ["actuator_id"],
+    },
+    async execute(_toolCallId: string, args: { actuator_id: string }) {
+      const result = await spineActuatorSelect(spineConfig, args.actuator_id);
+      // Verify by fetching the new selection
+      const selected = await spineActuatorSelected(spineConfig);
+      const name = selected.name || selected.actuator_id || "unknown";
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Switched to actuator: ${name} (${selected.type || "unknown"}) — ${selected.status || "unknown"}`,
+          },
+        ],
+        details: { ok: result.ok, selected },
+      };
+    },
+  };
+}

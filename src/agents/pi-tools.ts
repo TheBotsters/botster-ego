@@ -12,6 +12,8 @@ import {
   createSpineProcessTool,
   createSpineReadTool,
   createSpineWriteTool,
+  createActuatorListTool,
+  createActuatorSelectTool,
 } from "../seks/spine-exec-intercept.js";
 import { resolveGatewayMessageChannel } from "../utils/message-channel.js";
 import { resolveAgentConfig } from "./agent-scope.js";
@@ -496,6 +498,7 @@ export function createOpenClawCodingTools(options?: {
       : []),
     ...(applyPatchTool ? [applyPatchTool as unknown as AnyAgentTool] : []),
     execTool,
+    ...(spineConfig ? [createActuatorListTool(spineConfig) as unknown as AnyAgentTool, createActuatorSelectTool(spineConfig) as unknown as AnyAgentTool] : []),
     processTool,
     // Channel docking: include channel-defined agent tools (login, etc.).
     ...listChannelAgentTools({ cfg: options?.config }),

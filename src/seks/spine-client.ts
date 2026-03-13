@@ -134,3 +134,64 @@ export async function spineExec(
     message: typeof record.message === "string" ? record.message : undefined,
   };
 }
+
+// ─── Actuator Management (brain-level, not routed through actuator) ───────────
+
+export interface ActuatorInfo {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  enabled: boolean;
+  last_seen_at: string;
+}
+
+export interface ActuatorSelectedInfo {
+  actuator_id: string | null;
+  name?: string;
+  status?: string;
+  type?: string;
+  message?: string;
+}
+
+export async function spineActuatorList(config: SpineConfig): Promise<ActuatorInfo[]> {
+  const response = await fetch(`${config.brokerUrl}/v1/actuators`, {
+    headers: {
+      Authorization: `Bearer ${config.agentToken}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to list actuators: HTTP ${response.status}`);
+  }
+  return response.json() as Promise<ActuatorInfo[]>;
+}
+
+export async function spineActuatorSelected(config: SpineConfig): Promise<ActuatorSelectedInfo> {
+  const response = await fetch(`${config.brokerUrl}/v1/actuator/selected`, {
+    headers: {
+      Authorization: `Bearer ${config.agentToken}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get selected actuator: HTTP ${response.status}`);
+  }
+  return response.json() as Promise<ActuatorSelectedInfo>;
+}
+
+export async function spineActuatorSelect(
+  config: SpineConfig,
+  actuatorId: string,
+): Promise<{ ok: boolean; selected_actuator_id: string }> {
+  const response = await fetch(`${config.brokerUrl}/v1/actuator/select`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.agentToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ actuator_id: actuatorId }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to select actuator: HTTP ${response.status}`);
+  }
+  return response.json() as Promise<{ ok: boolean; selected_actuator_id: string }>;
+}
