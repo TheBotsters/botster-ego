@@ -267,17 +267,14 @@ export function createSpineEditTool(
 
 // ─── Actuator Management Tools ──────────────────────────────────────────────
 
-import {
-  spineActuatorList,
-  spineActuatorSelected,
-  spineActuatorSelect,
-} from "./spine-client.js";
+import { spineActuatorList, spineActuatorSelected, spineActuatorSelect } from "./spine-client.js";
 
 export function createActuatorListTool(spineConfig: SpineConfig): AgentTool<any> {
   return {
     name: "actuator_list",
     label: "List Actuators",
-    description: "List available actuators (execution environments). Shows name, type, status, and ID for each actuator.",
+    description:
+      "List available actuators (execution environments). Shows name, type, status, and ID for each actuator.",
     parameters: {
       type: "object",
       properties: {},
@@ -301,7 +298,8 @@ export function createActuatorSelectTool(spineConfig: SpineConfig): AgentTool<an
   return {
     name: "actuator_select",
     label: "Select Actuator",
-    description: "Switch the active actuator (execution environment). All subsequent exec/read/write/edit commands will run on the selected actuator. Use actuator_list first to see available actuators and their IDs.",
+    description:
+      "Switch the active actuator (execution environment). All subsequent exec/read/write/edit commands will run on the selected actuator. Use actuator_list first to see available actuators and their IDs.",
     parameters: {
       type: "object",
       properties: {

@@ -13,7 +13,7 @@ import {
   setAccountEnabledInConfigSection,
   type ChannelPlugin,
   type OpenClawConfig,
-} from "openclaw/plugin-sdk";
+} from "openclaw/plugin-sdk/zulip";
 import { ZulipConfigSchema } from "./config-schema.js";
 import { getZulipRuntime } from "./runtime.js";
 import {

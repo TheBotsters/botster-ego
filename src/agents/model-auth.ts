@@ -55,11 +55,7 @@ function createBrokerClientIfConfigured(cfg?: OpenClawConfig): BrokerClient | un
   if (!brokerConfig?.url) {
     return undefined;
   }
-  return new BrokerClient(
-    brokerConfig.url,
-    brokerConfig.token,
-    brokerConfig.tokenCommand
-  );
+  return new BrokerClient(brokerConfig.url, brokerConfig.token, brokerConfig.tokenCommand);
 }
 
 const AWS_BEARER_ENV = "AWS_BEARER_TOKEN_BEDROCK";
@@ -332,7 +328,7 @@ export async function resolveApiKeyForProvider(params: {
         mode: "broker",
       };
     } catch (error) {
-      console.warn(`[botster-auth] Broker auth failed: ${error}`);
+      console.warn(`[botster-auth] Broker auth failed: ${String(error)}`);
     }
   }
 
@@ -445,7 +441,14 @@ export async function resolveApiKeyForProvider(params: {
 }
 
 export type EnvApiKeyResult = { apiKey: string; source: string };
-export type ModelAuthMode = "api-key" | "oauth" | "token" | "mixed" | "aws-sdk" | "broker" | "unknown";
+export type ModelAuthMode =
+  | "api-key"
+  | "oauth"
+  | "token"
+  | "mixed"
+  | "aws-sdk"
+  | "broker"
+  | "unknown";
 
 export function resolveEnvApiKey(
   provider: string,
@@ -530,7 +533,6 @@ export function resolveEnvApiKey(
     return null;
   }
   return pick(envVar);
-
 }
 
 export function resolveModelAuthMode(
@@ -667,7 +669,9 @@ export function requireApiKey(auth: ResolvedProviderAuth, provider: string): str
   if (key) {
     return key;
   }
-  throw new Error(`[botster-auth] No API key resolved for provider "${provider}" (auth mode: ${auth.mode}).`);
+  throw new Error(
+    `[botster-auth] No API key resolved for provider "${provider}" (auth mode: ${auth.mode}).`,
+  );
 }
 
 export function applyLocalNoAuthHeaderOverride<T extends Model<Api>>(

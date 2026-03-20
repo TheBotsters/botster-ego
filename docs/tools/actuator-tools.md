@@ -5,7 +5,9 @@ These tools let an agent inspect and switch its active execution environment ("a
 ## What the tools do
 
 ### `actuator_list`
+
 Returns all actuators visible to the current agent, including:
+
 - `id`
 - `name`
 - `type`
@@ -15,9 +17,11 @@ Returns all actuators visible to the current agent, including:
 Use this first when you need to confirm where commands will run.
 
 ### `actuator_select`
+
 Switches the active actuator for subsequent tool calls.
 
 Input:
+
 - `actuator_id` (required, non-empty string)
 
 After selecting, the tool verifies the new selection by calling `actuator/selected` and reports the selected actuator name/type/status.
@@ -29,6 +33,7 @@ After selecting, the tool verifies the new selection by calling `actuator/select
 The brain (ego) **must not** call the broker directly with long-lived broker credentials.
 
 Instead:
+
 1. Brain tools call `SEKS_BROKER_URL`
 2. In Freudian deployments, `SEKS_BROKER_URL` points to the **superego proxy** (for example `http://127.0.0.1:19803`)
 3. Superego injects broker auth and enforces endpoint allowlists
@@ -40,6 +45,7 @@ This preserves the boundary: ego has operational capability but does not hold br
 ## Runtime behavior
 
 Selection affects brain-routed execution tools:
+
 - `exec`
 - `process`
 - `read`
@@ -49,6 +55,7 @@ Selection affects brain-routed execution tools:
 Operational rule: once `actuator_select` succeeds, subsequent routed commands target that actuator until selection changes again.
 
 ### Expected failure modes
+
 - **No actuator available/selected**: command routing returns no target
 - **Invalid actuator ID**: select request fails with broker/superego error
 - **Offline actuator**: command dispatch fails or times out
@@ -59,18 +66,21 @@ Operational rule: once `actuator_select` succeeds, subsequent routed commands ta
 ## Operator quick checks
 
 ### Check current selection
+
 ```bash
 curl -sS http://127.0.0.1:19803/v1/actuator/selected \
   -H "Authorization: Bearer $SUPEREGO_BROKER_TOKEN"
 ```
 
 ### List available actuators
+
 ```bash
 curl -sS http://127.0.0.1:19803/v1/actuators \
   -H "Authorization: Bearer $SUPEREGO_BROKER_TOKEN"
 ```
 
 ### Switch actuator
+
 ```bash
 curl -sS -X POST http://127.0.0.1:19803/v1/actuator/select \
   -H "Authorization: Bearer $SUPEREGO_BROKER_TOKEN" \

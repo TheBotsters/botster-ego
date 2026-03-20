@@ -521,7 +521,12 @@ export function createOpenClawCodingTools(options?: {
       : []),
     ...(applyPatchTool ? [applyPatchTool as unknown as AnyAgentTool] : []),
     execTool,
-    ...(spineConfig ? [createActuatorListTool(spineConfig) as unknown as AnyAgentTool, createActuatorSelectTool(spineConfig) as unknown as AnyAgentTool] : []),
+    ...(spineConfig
+      ? [
+          createActuatorListTool(spineConfig) as unknown as AnyAgentTool,
+          createActuatorSelectTool(spineConfig) as unknown as AnyAgentTool,
+        ]
+      : []),
     processTool,
     // Channel docking: include channel-defined agent tools (login, etc.).
     ...listChannelAgentTools({ cfg: options?.config }),

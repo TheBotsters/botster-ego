@@ -36,7 +36,10 @@ export async function resolveDiscordTokenAsync(
       );
       const channelTokens = await brokerClient.getChannelTokens();
       if (channelTokens.discord) {
-        const normalizedToken = normalizeDiscordToken(channelTokens.discord);
+        const normalizedToken = normalizeDiscordToken(
+          channelTokens.discord,
+          "broker-discord-token",
+        );
         if (normalizedToken) {
           return { token: normalizedToken, source: "broker" };
         }

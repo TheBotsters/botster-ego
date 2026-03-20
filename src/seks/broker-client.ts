@@ -49,30 +49,33 @@ export class BrokerClient {
         this.cachedToken = stdout.trim();
         return this.cachedToken;
       } catch (error) {
-        throw new Error(`[botster-broker-client] Failed to execute tokenCommand: ${error}`);
+        throw new Error(
+          `[botster-broker-client] Failed to execute tokenCommand: ${String(error)}`,
+          {
+            cause: error,
+          },
+        );
       }
     }
 
-    throw new Error("[botster-broker-client] No broker token configured (token or tokenCommand required)");
+    throw new Error(
+      "[botster-broker-client] No broker token configured (token or tokenCommand required)",
+    );
   }
 
   /**
    * Make authenticated HTTP request to broker
    */
-  private async request<T>(
-    path: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = await this.resolveToken();
     const url = `${this.brokerUrl}${path}`;
 
     const response = await fetch(url, {
       ...options,
       headers: {
-        ...options.headers,
+        ...(options.headers as Record<string, string> | undefined),
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        ...options.headers,
       },
     });
 
@@ -83,7 +86,9 @@ export class BrokerClient {
         code: errorData.code,
         statusCode: response.status,
       };
-      throw new Error(`[botster-broker-client] Broker request failed: ${JSON.stringify(brokerError)}`);
+      throw new Error(
+        `[botster-broker-client] Broker request failed: ${JSON.stringify(brokerError)}`,
+      );
     }
 
     return response.json();
@@ -105,7 +110,7 @@ export class BrokerClient {
   async proxyRequest(
     provider: string,
     path: string,
-    options: BrokerProxyRequestOptions = {}
+    options: BrokerProxyRequestOptions = {},
   ): Promise<Response> {
     const token = await this.resolveToken();
     const url = this.proxyUrl(provider, path);
