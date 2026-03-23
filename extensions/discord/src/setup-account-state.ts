@@ -13,7 +13,7 @@ export type InspectedDiscordSetupAccount = {
   accountId: string;
   enabled: boolean;
   token: string;
-  tokenSource: "env" | "config" | "none";
+  tokenSource: "env" | "config" | "broker" | "none";
   tokenStatus: "available" | "configured_unavailable" | "missing";
   configured: boolean;
   config: DiscordAccountConfig;

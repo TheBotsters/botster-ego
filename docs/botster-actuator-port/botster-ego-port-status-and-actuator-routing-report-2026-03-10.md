@@ -1,4 +1,5 @@
 # Botster-Ego Port Status + Actuator Routing Report
+
 Date: 2026-03-10
 Author: FootGun
 Host: `our-house-in-the-middle`
@@ -8,6 +9,7 @@ Host: `our-house-in-the-middle`
 You are **not** fully ported to `TheBotsters/botster-ego` in live runtime.
 
 Current live sister gateways (Aeon, Annie, Nira, Síofra) all execute OpenClaw from:
+
 - `/opt/botster-brain-test/openclaw.mjs`
 - repo: `BotstersDev/botster-brain`
 - commit: `ecf3021a1`
@@ -30,11 +32,13 @@ All sister superego configs currently point `ego.args` to `/opt/botster-brain-te
 - `/etc/superego/siofra.toml`
 
 Each has:
+
 - `args = ["/opt/botster-brain-test/openclaw.mjs", "gateway", "run", "--bind", "lan"]`
 
 ### 1.2 Running process confirmation
 
 Running gateway commands are all from `/opt/botster-brain-test/openclaw.mjs` for:
+
 - aeonbyte
 - annie
 - nira
@@ -67,6 +71,7 @@ The live architecture is a 3-service pattern per sister:
 3. `sister-ego.service` (brain-mode sidecar)
 
 Examples:
+
 - `aeon.service`, `aeon-actuator.service`, `aeon-ego.service`
 - `annie.service`, `annie-actuator.service`, `annie-ego.service`
 - etc.
@@ -74,6 +79,7 @@ Examples:
 ### 2.1 Superego path
 
 For each sister:
+
 - systemd unit executes `/usr/local/bin/superego --config /etc/superego/<sister>.toml`
 - superego config includes broker URL and local proxy listener (127.0.0.1:1980x)
 - superego launches OpenClaw gateway process as sister user
@@ -81,6 +87,7 @@ For each sister:
 ### 2.2 Key env wiring in superego toml
 
 Per sister toml (live):
+
 - `SEKS_BROKER_URL = "http://127.0.0.1:1980x"`
 - `BOTSTER_EXEC_VIA_SPINE = "1"`
 - `HOME = "/home/<sister>"`
@@ -90,11 +97,13 @@ This indicates OpenClaw talks to local superego proxy for broker-mediated execut
 ### 2.3 Actuator services
 
 `*-actuator.service` runs:
+
 - user: `<sister>_actuator`
 - command: `/usr/bin/node /opt/botster-actuator/dist/index.js --id ... --cwd /home/<sister>_actuator`
 - env includes `SEKS_BROKER_URL=https://broker-internal.seksbot.com` and actuator token
 
 `*-ego.service` runs brain-mode sidecar with:
+
 - user: `<sister>`
 - command: `/usr/bin/node /opt/botster-actuator/dist/index.js --id ... --cwd /home/<sister> --brain --webhook-port ...`
 - env includes broker URL/token
@@ -106,6 +115,7 @@ This indicates OpenClaw talks to local superego proxy for broker-mediated execut
 ### 3.1 In `/opt/botster-brain-test` (present)
 
 Grepping built dist shows explicit references:
+
 - `src/seks/spine-client.ts`
 - `src/seks/spine-exec-intercept.ts`
 - `createSpineExecTool`, `createSpineProcessTool`, `createSpineReadTool`, `createSpineWriteTool`, `createSpineEditTool`
@@ -116,6 +126,7 @@ This is strong evidence that `botster-brain-test` runtime includes spine interce
 ### 3.2 In `/opt/botster-ego-dev` (absent by grep)
 
 Equivalent grep over built `dist` for:
+
 - `BOTSTER_EXEC_VIA_SPINE`
 - `spine-client`
 - `spine-exec-intercept`
@@ -136,6 +147,7 @@ Given behavior observed during attempted cutover, this is consistent with actuat
 When Aeon was switched to `/opt/botster-ego-dev`, you observed identity/context differences and integration symptoms (e.g., path/user assumptions and tool behavior drift).
 
 Given sections (2) and (3), the likely cause is not a single bad setting, but a runtime model mismatch:
+
 - `botster-brain-test` appears tailored for spine-mediated routing in this deployment.
 - `botster-ego v2026.3.2` appears to lack those same compiled interception markers.
 
@@ -144,6 +156,7 @@ Given sections (2) and (3), the likely cause is not a single bad setting, but a 
 ## 5) Current known-good baseline
 
 Known-good operational baseline today:
+
 - all sisters on `/opt/botster-brain-test`
 - superego + actuator + ego sidecar services active
 - existing broker routing behavior intact
@@ -165,6 +178,7 @@ Known-good operational baseline today:
 ## Appendix A — Service pattern snapshot
 
 Running and enabled for each sister:
+
 - `<sister>.service` (superego + openclaw)
 - `<sister>-actuator.service` (actuator account)
 - `<sister>-ego.service` (brain-mode sidecar)
@@ -212,6 +226,7 @@ In `/opt/botster-brain-test` source:
     - wraps `exec/process` via `createSpineExecTool` / `createSpineProcessTool`
 
 Concrete indicator lines (from grep):
+
 - `src/agents/pi-tools.ts` references `getSpineConfig` and all `createSpine*` wrappers
 - `src/seks/spine-client.ts` references `SEKS_BROKER_URL`
 
@@ -236,6 +251,7 @@ Because ego fork (current inspected source) lacks those explicit hook points, th
 ### C.4 Why this matters for your deployment
 
 Your live superego TOMLs set:
+
 - `SEKS_BROKER_URL=http://127.0.0.1:1980x`
 - `BOTSTER_EXEC_VIA_SPINE=1`
 
@@ -249,4 +265,3 @@ To port actuator routing parity into `botster-ego`, the following must exist (or
 2. Tool interception wrappers for `exec/process/read/write/edit`
 3. Hook point in tool assembly (`pi-tools` equivalent) that conditionally applies wrappers
 4. Error/status mapping compatible with current operational expectations (`completed/failed/running/timeout` flow)
-
