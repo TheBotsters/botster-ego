@@ -2,12 +2,12 @@
  * Zulip event monitor using long polling
  */
 
-import type { OpenClawConfig, RuntimeEnv, ChatType, ReplyPayload } from "openclaw/plugin-sdk";
+import type { OpenClawConfig, RuntimeEnv, ChatType, ReplyPayload } from "openclaw/plugin-sdk/zulip";
 import {
   createReplyPrefixOptions,
   createTypingCallbacks,
   logTypingFailure,
-} from "openclaw/plugin-sdk";
+} from "openclaw/plugin-sdk/zulip";
 import { getZulipRuntime } from "../runtime.js";
 import { resolveZulipAccount, type ResolvedZulipAccount } from "./accounts.js";
 import { ZulipClient, type ZulipMessage, type ZulipEvent } from "./client.js";
@@ -135,7 +135,9 @@ export async function monitorZulipProvider(opts: MonitorZulipOpts = {}): Promise
     const configAllowFrom = normalizeAllowList(account.config.allowFrom ?? []);
     const configGroupAllowFrom = normalizeAllowList(account.config.groupAllowFrom ?? []);
     const storeAllowFrom = normalizeAllowList(
-      await core.channel.pairing.readAllowFromStore("zulip").catch(() => []),
+      await core.channel.pairing
+        .readAllowFromStore({ channel: "zulip", accountId: account.accountId })
+        .catch(() => []),
     );
     const effectiveAllowFrom = Array.from(new Set([...configAllowFrom, ...storeAllowFrom]));
     const effectiveGroupAllowFrom = Array.from(
@@ -163,6 +165,7 @@ export async function monitorZulipProvider(opts: MonitorZulipOpts = {}): Promise
         if (dmPolicy === "pairing") {
           const { code, created } = await core.channel.pairing.upsertPairingRequest({
             channel: "zulip",
+            accountId: account.accountId,
             id: String(senderId),
             meta: { name: senderName, email: senderEmail },
           });
