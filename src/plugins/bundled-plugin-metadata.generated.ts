@@ -4218,4 +4218,27 @@ export const GENERATED_BUNDLED_PLUGIN_METADATA = [
       channels: ["zalouser"],
     },
   },
+  {
+    dirName: "zulip",
+    idHint: "zulip",
+    source: {
+      source: "./index.ts",
+      built: "index.js",
+    },
+    packageName: "@openclaw/zulip",
+    packageVersion: "2026.2.12",
+    packageDescription: "OpenClaw Zulip channel plugin",
+    packageManifest: {
+      extensions: ["./index.ts"],
+    },
+    manifest: {
+      id: "zulip",
+      configSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {},
+      },
+      channels: ["zulip"],
+    },
+  },
 ] as const;
