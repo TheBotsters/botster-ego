@@ -10,7 +10,7 @@ import {
   resolveDefaultModelForAgent,
 } from "../agents/model-selection.js";
 import {
-  getSubagentRunByChildSessionKey,
+  getLatestSubagentRunByChildSessionKey,
   getSubagentSessionRuntimeMs,
   getSubagentSessionStartedAt,
   listSubagentRunsForController,
@@ -312,6 +312,8 @@ function resolveTranscriptUsageFallback(params: {
     cfg: params.cfg,
     provider: modelProvider,
     model,
+    // Gateway/session listing is read-only; don't start async model discovery.
+    allowAsyncLoad: false,
   });
   const estimatedCostUsd = resolveEstimatedSessionCostUsd({
     cfg: params.cfg,
@@ -899,7 +901,7 @@ export function getSessionDefaults(cfg: OpenClawConfig): GatewaySessionsDefaults
   });
   const contextTokens =
     cfg.agents?.defaults?.contextTokens ??
-    lookupContextTokens(resolved.model) ??
+    lookupContextTokens(resolved.model, { allowAsyncLoad: false }) ??
     DEFAULT_CONTEXT_TOKENS;
   return {
     modelProvider: resolved.provider ?? null,
@@ -1053,7 +1055,7 @@ export function buildGatewaySessionRow(params: {
   const deliveryFields = normalizeSessionDeliveryFields(entry);
   const parsedAgent = parseAgentSessionKey(key);
   const sessionAgentId = normalizeAgentId(parsedAgent?.agentId ?? resolveDefaultAgentId(cfg));
-  const subagentRun = getSubagentRunByChildSessionKey(key);
+  const subagentRun = getLatestSubagentRunByChildSessionKey(key);
   const subagentStatus = subagentRun ? resolveSubagentSessionStatus(subagentRun) : undefined;
   const subagentStartedAt = subagentRun ? getSubagentSessionStartedAt(subagentRun) : undefined;
   const subagentEndedAt = subagentRun ? subagentRun.endedAt : undefined;
@@ -1107,6 +1109,8 @@ export function buildGatewaySessionRow(params: {
         cfg,
         provider: modelProvider,
         model,
+        // Gateway/session listing is read-only; don't start async model discovery.
+        allowAsyncLoad: false,
       }),
     );
 

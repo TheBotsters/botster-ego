@@ -77,6 +77,8 @@ describe("clawhub helpers", () => {
     expect(satisfiesPluginApiRange("1.9.0", ">=1.2.0 <2.0.0")).toBe(true);
     expect(satisfiesPluginApiRange("2.0.0", "^1.2.0")).toBe(false);
     expect(satisfiesPluginApiRange("1.1.9", ">=1.2.0")).toBe(false);
+    expect(satisfiesPluginApiRange("2026.3.22", ">=2026.3.22")).toBe(true);
+    expect(satisfiesPluginApiRange("2026.3.21", ">=2026.3.22")).toBe(false);
     expect(satisfiesPluginApiRange("invalid", "^1.2.0")).toBe(false);
   });
 
@@ -123,6 +125,25 @@ describe("clawhub helpers", () => {
         await fs.writeFile(configPath, JSON.stringify({ token: "macos-token-123" }), "utf8");
 
         await expect(resolveClawHubAuthToken()).resolves.toBe("macos-token-123");
+      } finally {
+        homedirSpy.mockRestore();
+      }
+    },
+  );
+
+  it.runIf(process.platform === "darwin")(
+    "falls back to XDG_CONFIG_HOME on macOS when Application Support has no config",
+    async () => {
+      const fakeHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-clawhub-home-"));
+      const xdgRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-clawhub-xdg-"));
+      const configPath = path.join(xdgRoot, "clawhub", "config.json");
+      const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
+      process.env.XDG_CONFIG_HOME = xdgRoot;
+      try {
+        await fs.mkdir(path.dirname(configPath), { recursive: true });
+        await fs.writeFile(configPath, JSON.stringify({ token: "xdg-token-123" }), "utf8");
+
+        await expect(resolveClawHubAuthToken()).resolves.toBe("xdg-token-123");
       } finally {
         homedirSpy.mockRestore();
       }
