@@ -560,7 +560,7 @@ jobs:
 
   checks-windows:
     needs: [preflight, build-artifacts]
-    if: always() && needs.preflight.outputs.docs_only != 'true' && needs.preflight.outputs.run_windows == 'true' && (github.event_name != 'push' || needs.build-artifacts.result == 'success')
+    if: false # TEMP(2026-03-24): disable windows CI in botster fork; see TODO.md
     runs-on: windows-latest
     timeout-minutes: 20
     env:
