@@ -306,7 +306,7 @@ export const zulipPlugin: ChannelPlugin<ResolvedZulipAccount> = {
         lastConnectedAt: (runtime as Record<string, unknown> | undefined)?.lastConnectedAt ?? null,
         lastDisconnect: (runtime as Record<string, unknown> | undefined)?.lastDisconnect ?? null,
       };
-      return snapshot as unknown as import("openclaw/plugin-sdk").ChannelAccountSnapshot;
+      return snapshot as unknown as import("openclaw/plugin-sdk/zulip").ChannelAccountSnapshot;
     },
   },
   setup: {
@@ -409,7 +409,7 @@ export const zulipPlugin: ChannelPlugin<ResolvedZulipAccount> = {
         apiKeySource: account.apiKeySource,
       };
       ctx.setStatus(
-        initialStatus as unknown as import("openclaw/plugin-sdk").ChannelAccountSnapshot,
+        initialStatus as unknown as import("openclaw/plugin-sdk/zulip").ChannelAccountSnapshot,
       );
       ctx.log?.info(`[${account.accountId}] starting Zulip channel`);
       return monitorZulipProvider({
@@ -421,7 +421,7 @@ export const zulipPlugin: ChannelPlugin<ResolvedZulipAccount> = {
           ctx.setStatus({
             accountId: ctx.accountId,
             ...patch,
-          } as unknown as import("openclaw/plugin-sdk").ChannelAccountSnapshot),
+          } as unknown as import("openclaw/plugin-sdk/zulip").ChannelAccountSnapshot),
       });
     },
   },

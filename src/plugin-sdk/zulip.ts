@@ -18,6 +18,7 @@ export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.j
 
 // Types
 export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelAccountSnapshot } from "../channels/plugins/types.core.js";
 export type { OpenClawConfig } from "../config/config.js";
 export type { RuntimeEnv } from "../runtime.js";
 export type { ChatType } from "../channels/chat-type.js";

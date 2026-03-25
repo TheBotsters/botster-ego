@@ -2,7 +2,7 @@
  * Zulip account resolution from config
  */
 
-import type { OpenClawConfig } from "openclaw/plugin-sdk";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 
 export type ZulipAccountConfig = {
   enabled?: boolean;
