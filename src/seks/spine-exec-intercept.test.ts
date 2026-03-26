@@ -63,7 +63,7 @@ describe("createSpineExecTool", () => {
         payload: expect.objectContaining({ command: "whoami" }),
       }),
     );
-    expect(result.content[0].text).toContain("siofra_actuator");
+    expect((result.content[0] as { type: "text"; text: string }).text).toContain("siofra_actuator");
     expect(result.details.status).toBe("completed");
     expect(result.details.exitCode).toBe(0);
   });
@@ -78,7 +78,7 @@ describe("createSpineExecTool", () => {
     const result = await tool.execute("call-1", { command: "sleep 999" });
 
     expect(result.details.status).toBe("failed");
-    expect(result.content[0].text).toContain("timed out");
+    expect((result.content[0] as { type: "text"; text: string }).text).toContain("timed out");
   });
 
   it("throws when result is null (no actuator)", async () => {
@@ -119,7 +119,9 @@ describe("createSpineExecTool", () => {
 
     expect(result.details.status).toBe("failed");
     expect(result.details.exitCode).toBe(1);
-    expect(result.content[0].text).toContain("permission denied");
+    expect((result.content[0] as { type: "text"; text: string }).text).toContain(
+      "permission denied",
+    );
   });
 
   it("returns base tool unchanged when execute is undefined", () => {
@@ -128,7 +130,7 @@ describe("createSpineExecTool", () => {
       label: "exec",
       description: "test",
       parameters: { type: "object" as const, properties: {} },
-    };
+    } as any; // intentionally missing execute — testing the no-execute fallback path
     const tool = createSpineExecTool(noExec, testConfig);
     expect(tool.execute).toBeUndefined();
   });
@@ -209,7 +211,9 @@ describe("createSpineReadTool", () => {
         payload: { file_path: "/workspace/SOUL.md" },
       }),
     );
-    expect(result.content[0].text).toContain("file contents here");
+    expect((result.content[0] as { type: "text"; text: string }).text).toContain(
+      "file contents here",
+    );
   });
 });
 

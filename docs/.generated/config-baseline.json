@@ -1689,7 +1689,7 @@
       "tags": [
         "automation"
       ],
-      "help": "Delivery target (\"last\", \"none\", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line, bluebubbles, feishu, matrix, mattermost, msteams, nextcloud-talk, nostr, synology-chat, tlon, twitch, zalo, zalouser.",
+      "help": "Delivery target (\"last\", \"none\", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line, bluebubbles, feishu, matrix, mattermost, msteams, nextcloud-talk, nostr, synology-chat, tlon, twitch, zalo, zalouser, zulip.",
       "hasChildren": false
     },
     {
@@ -4345,7 +4345,7 @@
       "tags": [
         "automation"
       ],
-      "help": "Delivery target (\"last\", \"none\", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line, bluebubbles, feishu, matrix, mattermost, msteams, nextcloud-talk, nostr, synology-chat, tlon, twitch, zalo, zalouser.",
+      "help": "Delivery target (\"last\", \"none\", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line, bluebubbles, feishu, matrix, mattermost, msteams, nextcloud-talk, nostr, synology-chat, tlon, twitch, zalo, zalouser, zulip.",
       "hasChildren": false
     },
     {
@@ -38860,6 +38860,331 @@
       "hasChildren": false
     },
     {
+      "path": "channels.zulip",
+      "kind": "channel",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "channels",
+        "network"
+      ],
+      "label": "@openclaw/zulip",
+      "help": "OpenClaw Zulip channel plugin",
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.accounts",
+      "kind": "channel",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.accounts.*",
+      "kind": "channel",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.accounts.*.allowFrom",
+      "kind": "channel",
+      "type": "array",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.accounts.*.allowFrom.*",
+      "kind": "channel",
+      "type": [
+        "number",
+        "string"
+      ],
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.apiKey",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.botEmail",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.dmPolicy",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "enumValues": [
+        "open",
+        "pairing",
+        "allowlist"
+      ],
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.enabled",
+      "kind": "channel",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.groupAllowFrom",
+      "kind": "channel",
+      "type": "array",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.accounts.*.groupAllowFrom.*",
+      "kind": "channel",
+      "type": [
+        "number",
+        "string"
+      ],
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.groupPolicy",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "enumValues": [
+        "open",
+        "allowlist"
+      ],
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.historyLimit",
+      "kind": "channel",
+      "type": "number",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.name",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.requireMention",
+      "kind": "channel",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.accounts.*.siteUrl",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.allowFrom",
+      "kind": "channel",
+      "type": "array",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.allowFrom.*",
+      "kind": "channel",
+      "type": [
+        "number",
+        "string"
+      ],
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.apiKey",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.botEmail",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.dmPolicy",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "enumValues": [
+        "open",
+        "pairing",
+        "allowlist"
+      ],
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.enabled",
+      "kind": "channel",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.groupAllowFrom",
+      "kind": "channel",
+      "type": "array",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": true
+    },
+    {
+      "path": "channels.zulip.groupAllowFrom.*",
+      "kind": "channel",
+      "type": [
+        "number",
+        "string"
+      ],
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.groupPolicy",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "enumValues": [
+        "open",
+        "allowlist"
+      ],
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.historyLimit",
+      "kind": "channel",
+      "type": "number",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.name",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.requireMention",
+      "kind": "channel",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "channels.zulip.siteUrl",
+      "kind": "channel",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
       "path": "cli",
       "kind": "core",
       "type": "object",
@@ -58553,6 +58878,127 @@
     },
     {
       "path": "plugins.entries.zalouser.subagent.allowModelOverride",
+      "kind": "plugin",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "access"
+      ],
+      "label": "Allow Plugin Subagent Model Override",
+      "help": "Explicitly allows this plugin to request provider/model overrides in background subagent runs. Keep false unless the plugin is trusted to steer model selection.",
+      "hasChildren": false
+    },
+    {
+      "path": "plugins.entries.zulip",
+      "kind": "plugin",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "advanced"
+      ],
+      "label": "@openclaw/zulip",
+      "help": "OpenClaw Zulip channel plugin (plugin: zulip)",
+      "hasChildren": true
+    },
+    {
+      "path": "plugins.entries.zulip.config",
+      "kind": "plugin",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "advanced"
+      ],
+      "label": "@openclaw/zulip Config",
+      "help": "Plugin-defined config payload for zulip.",
+      "hasChildren": false
+    },
+    {
+      "path": "plugins.entries.zulip.enabled",
+      "kind": "plugin",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "advanced"
+      ],
+      "label": "Enable @openclaw/zulip",
+      "hasChildren": false
+    },
+    {
+      "path": "plugins.entries.zulip.hooks",
+      "kind": "plugin",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "advanced"
+      ],
+      "label": "Plugin Hook Policy",
+      "help": "Per-plugin typed hook policy controls for core-enforced safety gates. Use this to constrain high-impact hook categories without disabling the entire plugin.",
+      "hasChildren": true
+    },
+    {
+      "path": "plugins.entries.zulip.hooks.allowPromptInjection",
+      "kind": "plugin",
+      "type": "boolean",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "access"
+      ],
+      "label": "Allow Prompt Injection Hooks",
+      "help": "Controls whether this plugin may mutate prompts through typed hooks. Set false to block `before_prompt_build` and ignore prompt-mutating fields from legacy `before_agent_start`, while preserving legacy `modelOverride` and `providerOverride` behavior.",
+      "hasChildren": false
+    },
+    {
+      "path": "plugins.entries.zulip.subagent",
+      "kind": "plugin",
+      "type": "object",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "advanced"
+      ],
+      "label": "Plugin Subagent Policy",
+      "help": "Per-plugin subagent runtime controls for model override trust and allowlists. Keep this unset unless a plugin must explicitly steer subagent model selection.",
+      "hasChildren": true
+    },
+    {
+      "path": "plugins.entries.zulip.subagent.allowedModels",
+      "kind": "plugin",
+      "type": "array",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [
+        "access"
+      ],
+      "label": "Plugin Subagent Allowed Models",
+      "help": "Allowed override targets for trusted plugin subagent runs as canonical \"provider/model\" refs. Use \"*\" only when you intentionally allow any model.",
+      "hasChildren": true
+    },
+    {
+      "path": "plugins.entries.zulip.subagent.allowedModels.*",
+      "kind": "plugin",
+      "type": "string",
+      "required": false,
+      "deprecated": false,
+      "sensitive": false,
+      "tags": [],
+      "hasChildren": false
+    },
+    {
+      "path": "plugins.entries.zulip.subagent.allowModelOverride",
       "kind": "plugin",
       "type": "boolean",
       "required": false,
