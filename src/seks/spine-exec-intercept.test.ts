@@ -130,7 +130,7 @@ describe("createSpineExecTool", () => {
       label: "exec",
       description: "test",
       parameters: { type: "object" as const, properties: {} },
-    } as any; // intentionally missing execute — testing the no-execute fallback path
+    } as Parameters<typeof createSpineExecTool>[0]; // intentionally missing execute — testing the no-execute fallback path
     const tool = createSpineExecTool(noExec, testConfig);
     expect(tool.execute).toBeUndefined();
   });

@@ -221,7 +221,7 @@ claude auth status
 - OpenClaw auto-loads the bundled Anthropic plugin at gateway startup when your
   config explicitly references `claude-cli/...` or `claude-cli` backend config.
 
-### Config snippet
+### Config snippet (claude-cli)
 
 ```json5
 {
